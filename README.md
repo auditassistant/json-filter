@@ -1,7 +1,7 @@
 JSON Filter
 ===
 
-Match an objects against a filters - used internally by [JSON Context](https://github.com/mmckegg/json-context), [Realtime Templates](https://github.com/mmckegg/realtime-templates) and [ContextDB](https://github.com/mmckegg/contextdb).
+Match JSON objects against filters - used internally by [JSON Context](https://github.com/mmckegg/json-context), [Realtime Templates](https://github.com/mmckegg/realtime-templates) and [ContextDB](https://github.com/mmckegg/contextdb).
 
 ## Installation
 
