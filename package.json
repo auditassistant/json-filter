@@ -1,0 +1,24 @@
+{
+  "name": "json-filter",
+  "version": "0.0.0",
+  "description": "Match an object against a filter",
+  "main": "index.js",
+  "scripts": {
+    "test": "tap test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmckegg/json-filter"
+  },
+  "keywords": [
+    "json",
+    "filter",
+    "query",
+    "validation"
+  ],
+  "devDependencies": {
+    "tap": "~0.4.0"
+  },
+  "author": "Matt McKegg",
+  "license": "MIT"
+}
