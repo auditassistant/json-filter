@@ -1,6 +1,6 @@
 {
   "name": "json-filter",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Match an object against a filter",
   "main": "index.js",
   "scripts": {
