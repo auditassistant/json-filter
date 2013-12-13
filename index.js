@@ -11,10 +11,10 @@ module.exports = function(source, filter, options){
   options.match = options.match || 'filter'
   
   if (checkConditionals){
-    if (filter && filter.$present && source){
-      return true
-    } else if (filter && filter.$present === false && !source){
-      return true
+    if (filter && filter.$present){
+      return !!source
+    } else if (filter && filter.$present === false){
+      return !source
     } else if (filter === null){
       return true
     } else if (filter == null/*undefined test*/){

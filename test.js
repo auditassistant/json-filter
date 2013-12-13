@@ -29,7 +29,42 @@ test("Basic Tests", function(t){
     {name: "Chickens"},
     {name: {$only: ['Dogs', "Cats"]}}
   ), false)
+
+  t.end()
+})
+
+test('$present', function(t){
+  t.equal(filterChecker(
+    {name: "Chickens"},
+    {name: {$present: true}}
+  ), true)
   
+  t.equal(filterChecker(
+    {cat: "Meow"},
+    {name: {$present: true}}
+  ), false)
+
+  t.equal(filterChecker(
+    {name: "Chickens"},
+    {name: {$present: false}}
+  ), false)
+  
+  t.equal(filterChecker(
+    {cat: "Meow"},
+    {name: {$present: false}}
+  ), true)
+
+  t.equal(filterChecker(
+    {object: {name: "Chickens"}},
+    {object: {$present: true}}
+  ), true)
+
+  t.equal(filterChecker(
+    {object: {name: "Chickens"}},
+    {object: {$present: false}}
+  ), false)
+
+
   t.end()
 })
 
