@@ -1,4 +1,4 @@
-module.exports = function(source, filter, options){
+var checkFilter = module.exports = function checkFilter(source, filter, options){
   // options: queryHandler, match (source, filter, any, all)
   // if filter, every filter permission must be satisfied (i.e. required fields)
   // if source, every source key must be specified in filter
@@ -32,8 +32,6 @@ module.exports = function(source, filter, options){
       return false
     }
   }
-
-
   
   if (source instanceof Object){
           
@@ -88,49 +86,93 @@ module.exports = function(source, filter, options){
   
 }
 
+
+function matchSpecifiedKeysWithOptional(keys, source, filter, options){
+
+  var result = true
+
+  for (var i=0,l=keys.length;i<l;i++){
+    var key = keys[i]
+    if (isNotMeta(key)){
+
+      var res = checkFilter(source[key], filter[key], options)
+      if ((filter.$optional && ~filter.$optional.indexOf(key)) || res !== 'undefined'){
+        result = res
+      } else {
+        result = false
+      }
+
+      if (!result){
+        break
+      }
+    }
+  }
+
+  return result
+
+}
+
+function matchSpecifiedKeys(keys, source, filter, options){
+  var result = true
+
+  for (var i=0,l=keys.length;i<l;i++){
+    var key = keys[i]
+    if (isNotMeta(key) && !checkFilter(source[key], filter[key], options)){
+      return false
+    }
+  }
+
+  return result
+}
+
 function matchKeys(source, filter, options){
   var result = false
   
   if (options.match === 'all'){
-    return combine(Object.keys(source), Object.keys(filter)).filter(isNotMeta).every(function(key){
-      return module.exports(source[key], filter[key], options)
-    })
+    var keys = keyUnion(source, filter)
+    result = matchSpecifiedKeys(keys, source, filter, options)
   } else if (filter.$matchAny){
-    return filter.$matchAny.some(function(innerFilter){
+    result = filter.$matchAny.some(function(innerFilter){
       var combinedFilter = mergeClone(filter, innerFilter)
       delete combinedFilter.$matchAny
       return matchKeys(source, combinedFilter, options)
     })
   } else {
     if (options.match === 'filter'){
-      return Object.keys(filter).filter(isNotMeta).every(function(key){
-        return module.exports(source[key], filter[key], options)
-      })
+      var keys = Object.keys(filter)
+      result = matchSpecifiedKeys(keys, source, filter, options)
     } else if (options.match === 'source'){
-      return Object.keys(source).filter(isNotMeta).every(function(key){
-        var res = module.exports(source[key], filter[key], mergeClone(options, {match: 'filter'}))
-        if (filter.$optional && ~filter.$optional.indexOf(key)){
-          return res
-        } else if (res !== 'undefined'){
-          return res
-        }
-      })
+      var keys = Object.keys(source)
+      options = Object.create(options)
+      options.match = 'filter'
+      result = matchSpecifiedKeysWithOptional(keys, source, filter, options)
     } else  {
-      return Object.keys(source).filter(isNotMeta).every(function(key){
-        return module.exports(source[key], filter[key], mergeClone(options, {match: 'filter'}))
-      })
+      var keys = Object.keys(source)
+      options = Object.create(options)
+      options.match = 'filter'
+      result = matchSpecifiedKeys(keys, source, filter, options)
     }
   }
 
+  return result
 }
 
-function combine(array1, array2){
-  array2.forEach(function(item){
-    if (!~array1.indexOf(item)){
-      array1.push(item)
+function keyUnion(a, b){
+  var result = {}
+
+  for (var k in a){
+    if (k in a){
+      result[k] = true
     }
-  })
-  return array1
+  }
+
+  for (var k in b){
+    if (k in b){
+      result[k] = true
+    }
+  }
+
+  return Object.keys(result)
 }
 
 function isNotMeta(key){
